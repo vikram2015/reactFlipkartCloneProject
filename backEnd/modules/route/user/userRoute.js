@@ -1,25 +1,22 @@
+const verifyRequest = require('../../../config/verify')
 const express = require('express');
 const router = express.Router();
-const {verifyRequest, isRequestValidated} = require('../../../config/verify');
 const {check, validationResult} = require('express-validator');
 const UserController = require('../../controller/user/userController');
+const CommonMiddleware = require('../../../config/commonMiddleware');
 
-router.post('/signIn', (req, res, next) => {
-    console.log('-------- req.body --------- >>>> ' + JSON.stringify(req.body))
+router.post('/signIn', verifyRequest.verifySignInRequest, verifyRequest.isRequestValidated, (req, res, next) => {
     UserController.userSignIn(req.body).then((data) => {
         if(data == 'User Not Found'){
-            console.log('-------- 00000000 ')
             res.status(400).json({
                 Message: 'User Not Found'
             })
         } else {
-            console.log('-------- 11111111 ')
             if(data == 'Invalid password'){
                 res.status(400).json({
                     Message: 'Invalid password'
                 })
             } else {
-                console.log('-------- 22222222 ')
                 const { _id, firstName, lastName, email, role, fullName} = data.user;
                 res.status(200).json({
                     token: data.token,
@@ -33,13 +30,12 @@ router.post('/signIn', (req, res, next) => {
 
     });
 
-router.post('/signUp', verifyRequest, isRequestValidated,( req, res, next ) => {
+router.post('/signUp', verifyRequest.verifySignUpRequest, verifyRequest.isRequestValidated,( req, res, next ) => {
 
     // let errors = [];
     let errors = (validationResult(req));
-    errors =errors.array();
+    errors = errors.array();
      if( errors.length > 0 ) {
-         console.log('========= errors.length ====== ' + errors.length);
          return res.status(400).json({errors: errors})
      }
 
@@ -57,10 +53,8 @@ router.post('/signUp', verifyRequest, isRequestValidated,( req, res, next ) => {
 
 })
 
-router.post('/profile', (req, res) => {
-    UserController.verifyUser(req.headers).then((result) => {
-        res.status(200).json({user: 'profile'});
-    })
+router.post('/profile', CommonMiddleware.requireSignIn, (req, res) => {
+        res.status(200).json({user: 'Inside profile'});
 })
 
 module.exports = router;

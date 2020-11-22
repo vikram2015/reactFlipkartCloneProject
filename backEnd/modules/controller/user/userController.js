@@ -7,8 +7,6 @@ const UserModal = require('../../modal/user/userModal');
 let userSignUp = (data) => {
     return new Promise((resolve, reject) => {
 
-
-
         UserModal.findOne({email : data.email})
             .exec((err, user) => {
                 if(user) {

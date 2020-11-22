@@ -41,7 +41,7 @@ let AdminSignIn = (AdminDetails) => {
             .then((admin) => {
                 if(admin){
                     if(admin.authenticate(AdminDetails.password) && admin.role === 'admin'){
-                        const token = jwt.sign({_id: admin._id}, config.secretKey, {expiresIn:'1h'});
+                        const token = jwt.sign({_id: admin._id, role: admin.role}, config.secretKey, {expiresIn:'1h'});
                         resolve({token, admin});
                     }else {
                         resolve('Invalid password');

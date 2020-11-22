@@ -9,6 +9,8 @@ const app = express();
 
 const User = require('./modules/route/user/userRoute');
 const Admin = require('./modules/route/admin/adminRoute');
+const Category = require('./modules/route/category/categoryRoute');
+const Product = require('./modules/route/product/productRoute');
 
 
 app.use(express.json());
@@ -18,6 +20,8 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 app.use('/user', User);
 app.use('/admin', Admin);
+app.use('/category', Category);
+app.use('/product', Product);
 
 app.listen(config.port, (err) => {
     if(err){

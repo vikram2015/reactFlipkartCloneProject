@@ -1,12 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const AdminController = require('../../controller/admin/adminController');
+const verifyRequest = require('../../../config/verify');
 
-router.post('/signIn', (req, res, next) => {
-    console.log('-------- req.body --------- >>>> ' + JSON.stringify(req.body))
+router.post('/signIn', verifyRequest.verifySignInRequest, verifyRequest.isRequestValidated, (req, res, next) => {
     AdminController.AdminSignIn(req.body).then((data) => {
         if(data == 'Admin Not Found'){
-            console.log('-------- 00000000 ')
             res.status(400).json({
                 Message: 'Admin Not Found'
             })
@@ -16,7 +15,7 @@ router.post('/signIn', (req, res, next) => {
                     Message: 'Invalid password'
                 })
             } else {
-                const { _id, firstName, lastName, email, role, fullName} = data.user;
+                const { _id, firstName, lastName, email, role, fullName} = data.admin;
                 res.status(200).json({
                     token: data.token,
                     Admin: {
@@ -29,7 +28,7 @@ router.post('/signIn', (req, res, next) => {
 
     });
 
-router.post('/signUp', ( req, res, next ) => {
+router.post('/signUp', verifyRequest.verifySignUpRequest, verifyRequest.isRequestValidated, ( req, res, next ) => {
     AdminController.AdminSignUp(req.body).then((data) => {
 
         if(data === 'Admin already exist'){
